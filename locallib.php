@@ -83,7 +83,20 @@ function dialogue_search_potentials(\mod_dialogue\dialogue $dialogue, $query = '
             }
         }
     }
+    
+    // look for users with receiveother capability.
+    $users = get_users_by_capability($context, 'mod/dialogue:receiveother');
 
+    foreach ($users as $user) {
+        $user->fullname = $user->firstname.' '.$user->lastname;//fullname($user);
+        $userpic = new user_picture($user);;
+        $imageurl = $userpic->get_url($PAGE);
+        $user->imageurl = $imageurl->out();
+        if (empty($user->imagealt)) {
+            $user->imagealt = get_string('pictureof', '', $user->fullname);
+        }
+        $results[$user->id] = $user;
+    }
     // current user doesn't need to be in list
     $wheres[] = "u.id != $USER->id";
 
